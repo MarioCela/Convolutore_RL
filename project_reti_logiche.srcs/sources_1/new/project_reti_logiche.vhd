@@ -71,10 +71,14 @@ architecture BEHAVIORAL of project_reti_logiche is
    
    process (state_curr, i_start)
    begin
+       o_address <= READ_BOTTOM;
+       o_en <= '0';
+       o_we <= '0';
        case state_curr is
             when S_WAIT =>
                 -- waiting for i_start
                 -- i_start <= '0';
+                wordselaborated <= "00000000";
                 o_address <= READ_BOTTOM;
                 o_done <= '0';
                 if (i_start = '1') then
@@ -92,7 +96,7 @@ architecture BEHAVIORAL of project_reti_logiche is
             when S2 =>
                 -- comparison between "wordstoread" and "wordselaborated"
                 o_convcount <= "0000";
-                if (conv_integer(unsigned(wordstoread)) <= conv_integer(unsigned(wordselaborated))) then
+                if (conv_integer(wordstoread) >= conv_integer(wordselaborated)) then
                     state_next <= S_DONE;
                 else
                     state_next <= S3;
