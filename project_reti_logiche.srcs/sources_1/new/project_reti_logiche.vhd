@@ -44,7 +44,7 @@ architecture BEHAVIORAL of project_reti_logiche is
    constant READ_BOTTOM     : std_logic_vector (15 downto 0) := "0000000000000000";
    constant WRITE_BOTTOM    : std_logic_vector (15 downto 0) := "0000001111101000";
    signal wordstoread, wordselaborated, wordtoelaborate, wordtosave : std_logic_vector (7 downto 0);
-   signal i_FSMconv, i_FSMdone, i_FSMdata, o_FSMp1k, o_FSMp2k : std_logic;
+   signal i_FSMconv, i_FSMdone, i_FSMdata, o_FSMp1k, o_FSMp2k: std_logic;
    signal o_convcount : std_logic_vector (3 downto 0);
    
    begin   
@@ -78,7 +78,7 @@ architecture BEHAVIORAL of project_reti_logiche is
             when S_WAIT =>
                 -- waiting for i_start
                 -- i_start <= '0';
-                wordselaborated <= "00000000";
+                wordselaborated <= READ_BOTTOM(7 downto 0);
                 o_address <= READ_BOTTOM;
                 o_done <= '0';
                 if (i_start = '1') then
@@ -96,14 +96,14 @@ architecture BEHAVIORAL of project_reti_logiche is
             when S2 =>
                 -- comparison between "wordstoread" and "wordselaborated"
                 o_convcount <= "0000";
-                if (conv_integer(wordstoread) >= conv_integer(wordselaborated)) then
+                if (wordselaborated < wordstoread) then
                     state_next <= S_DONE;
                 else
                     state_next <= S3;
                 end if;
             when S3 =>
                 -- enable counter and memory read
-                wordselaborated <= wordselaborated + "00000001";
+                wordselaborated <= wordselaborated + '1';
                 o_en <= '1';
                 o_address <= "00000000" & wordselaborated;
                 state_next <= S4;
@@ -111,23 +111,24 @@ architecture BEHAVIORAL of project_reti_logiche is
                 -- saving word to elaborate in "wordtoelaborate"
                 o_en <= '0';
                 wordtoelaborate <= i_data;
-                wordselaborated(7 downto 0) <= wordtoelaborate(6 downto 0) & "0";
+                wordtoelaborate(7 downto 0) <= wordtoelaborate(6 downto 0) & "0";
                 state_next <= S5;
             when S5 =>
                 -- start convolution
                 i_FSMconv <= '1';
                 i_FSMdata <= wordtoelaborate(0);
                 wordtoelaborate(7 downto 0) <= wordtoelaborate(6 downto 0) & "0";
+                state_next <= S6;
             when S6 =>
                 -- saving p1k + shift + counter++
                 i_FSMconv <= '0';
                 wordtosave(conv_integer(unsigned(o_convcount(3 downto 1)))) <= o_FSMp1k;
-                o_convcount <= o_convcount + "0001";
+                o_convcount <= o_convcount + '1';
                 state_next <= S7;
             when S7 =>
                 -- saving p2k + shift  + counter++
-                wordtosave(conv_integer(unsigned(o_convcount(3 downto 1)))) <= o_FSMp2k;
-                o_convcount <= o_convcount + "0001";
+                wordtosave(conv_integer(unsigned(o_convcount(3 downto 0)))) <= o_FSMp2k;
+                o_convcount <= o_convcount + '1';
                 if (o_convcount = "0111" or o_convcount = "1111") then
                     state_next <= S8;
                 else
@@ -138,11 +139,13 @@ architecture BEHAVIORAL of project_reti_logiche is
                 o_en <= '1';
                 o_we <= '1';
                 if (o_convcount = "0111") then
-                    o_address <= WRITE_BOTTOM + wordselaborated - "0000000000000001";
+                    o_address <= wordselaborated + '1' + WRITE_BOTTOM;
+                    -- o_address <= WRITE_BOTTOM + wordselaborated - "0000000000000001";
                     o_data <= wordtosave;
                     state_next <= S5;
                 elsif (o_convcount = "1111") then
-                    o_address <= WRITE_BOTTOM + wordselaborated;
+                    o_address <= wordselaborated + '1';
+                    -- o_address <= WRITE_BOTTOM + wordselaborated;
                     o_data <= wordtosave;
                     i_FSMdone <= '1';
                     state_next <= S2;
@@ -181,16 +184,16 @@ type state is (C00,C01,C10,C11);
 signal state_curr, state_next: state;
 
 begin
-    process(i_clk, i_rst)
+    process(i_clk, i_rst, e_conv, i_done)
         begin
-            if (i_rst = '1' or i_done = '1') then
+            if ((i_rst = '1') or (i_done = '1')) then
                 state_curr <= C00;
-            elsif (rising_edge(i_clk) and e_conv = '1') then
+            elsif ((rising_edge(i_clk)) and (e_conv = '1')) then
                 state_curr <= state_next;
             end if;
     end process;
 
-   	process(state_curr)
+   	process(state_curr, i_data)
     begin
         
     case state_curr is
@@ -199,7 +202,7 @@ begin
                 o_p1k <= '1';
                 o_p2k <= '1';
                 state_next <= C10;
-            elsif (i_data = '0') then
+            else
                 o_p1k <= '0';
                 o_p2k <= '0';
                 state_next <= C00;
