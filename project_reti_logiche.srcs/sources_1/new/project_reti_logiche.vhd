@@ -71,14 +71,12 @@ architecture BEHAVIORAL of project_reti_logiche is
    
    process (state_curr, i_start)
    begin
-       o_address <= READ_BOTTOM;
-       o_en <= '0';
-       o_we <= '0';
+
        case state_curr is
             when S_WAIT =>
                 -- waiting for i_start
                 -- i_start <= '0';
-                wordselaborated <= READ_BOTTOM(7 downto 0);
+                wordselaborated <= "00000000";
                 o_address <= READ_BOTTOM;
                 o_done <= '0';
                 if (i_start = '1') then
@@ -96,6 +94,7 @@ architecture BEHAVIORAL of project_reti_logiche is
             when S2 =>
                 -- comparison between "wordstoread" and "wordselaborated"
                 o_convcount <= "0000";
+                i_FSMdone <= '0';
                 if (wordselaborated < wordstoread) then
                     state_next <= S_DONE;
                 else
@@ -106,28 +105,30 @@ architecture BEHAVIORAL of project_reti_logiche is
                 wordselaborated <= wordselaborated + '1';
                 o_en <= '1';
                 o_address <= "00000000" & wordselaborated;
+                wordtoelaborate <= i_data;
                 state_next <= S4;
             when S4 =>
                 -- saving word to elaborate in "wordtoelaborate"
                 o_en <= '0';
-                wordtoelaborate <= i_data;
-                wordtoelaborate(7 downto 0) <= wordtoelaborate(6 downto 0) & "0";
                 state_next <= S5;
             when S5 =>
                 -- start convolution
                 i_FSMconv <= '1';
                 i_FSMdata <= wordtoelaborate(0);
+                wordtosave <= "00000000";
                 wordtoelaborate(7 downto 0) <= wordtoelaborate(6 downto 0) & "0";
                 state_next <= S6;
             when S6 =>
                 -- saving p1k + shift + counter++
                 i_FSMconv <= '0';
-                wordtosave(conv_integer(unsigned(o_convcount(3 downto 1)))) <= o_FSMp1k;
+                 wordtosave(CONV_INTEGER(unsigned(o_convcount(3 downto 1)))) <= o_FSMp1k;
+                -- wordtosave(7 downto 0) <= wordtosave(6 downto 0) & o_FSMp1k;
                 o_convcount <= o_convcount + '1';
                 state_next <= S7;
             when S7 =>
                 -- saving p2k + shift  + counter++
-                wordtosave(conv_integer(unsigned(o_convcount(3 downto 0)))) <= o_FSMp2k;
+                wordtosave(CONV_INTEGER(unsigned(o_convcount(3 downto 1)))) <= o_FSMp2k;
+                -- wordtosave(7 downto 0) <= wordtosave(6 downto 0) & o_FSMp1k;
                 o_convcount <= o_convcount + '1';
                 if (o_convcount = "0111" or o_convcount = "1111") then
                     state_next <= S8;
@@ -138,14 +139,13 @@ architecture BEHAVIORAL of project_reti_logiche is
                 -- saving word in RAM
                 o_en <= '1';
                 o_we <= '1';
-                if (o_convcount = "0111") then
-                    o_address <= wordselaborated + '1' + WRITE_BOTTOM;
+                if (CONV_INTEGER(unsigned(o_convcount)) = 7) then
+                    o_address <= WRITE_BOTTOM + ("00000000" & wordselaborated) - '1';
                     -- o_address <= WRITE_BOTTOM + wordselaborated - "0000000000000001";
                     o_data <= wordtosave;
                     state_next <= S5;
-                elsif (o_convcount = "1111") then
-                    o_address <= wordselaborated + '1';
-                    -- o_address <= WRITE_BOTTOM + wordselaborated;
+                elsif (CONV_INTEGER(unsigned(o_convcount)) = 8) then
+                    o_address <= WRITE_BOTTOM + ("00000000" & wordselaborated);
                     o_data <= wordtosave;
                     i_FSMdone <= '1';
                     state_next <= S2;
