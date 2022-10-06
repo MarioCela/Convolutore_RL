@@ -10,15 +10,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="1,000.001 ns"></ZoomEndTime>
-      <Cursor1Time time="1,000.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="3.075041 us"></ZoomEndTime>
+      <Cursor1Time time="0.797000 us"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="238"></NameColumnWidth>
-      <ValueColumnWidth column_width="96"></ValueColumnWidth>
+      <NameColumnWidth column_width="327"></NameColumnWidth>
+      <ValueColumnWidth column_width="152"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="24" />
+   <WVObjectSize size="16" />
    <wvobject fp_name="/project_tb/tb_done" type="logic">
       <obj_property name="ElementShortName">tb_done</obj_property>
       <obj_property name="ObjectShortName">tb_done</obj_property>
@@ -59,22 +59,6 @@
       <obj_property name="ElementShortName">c_CLOCK_PERIOD</obj_property>
       <obj_property name="ObjectShortName">c_CLOCK_PERIOD</obj_property>
    </wvobject>
-   <wvobject fp_name="/project_tb/UUT/wordtosave" type="array">
-      <obj_property name="ElementShortName">wordtosave[7:0]</obj_property>
-      <obj_property name="ObjectShortName">wordtosave[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/project_tb/UUT/wordtoelaborate" type="array">
-      <obj_property name="ElementShortName">wordtoelaborate[7:0]</obj_property>
-      <obj_property name="ObjectShortName">wordtoelaborate[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/project_tb/UUT/wordselaborated" type="array">
-      <obj_property name="ElementShortName">wordselaborated[7:0]</obj_property>
-      <obj_property name="ObjectShortName">wordselaborated[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/project_tb/UUT/wordstoread" type="array">
-      <obj_property name="ElementShortName">wordstoread[7:0]</obj_property>
-      <obj_property name="ObjectShortName">wordstoread[7:0]</obj_property>
-   </wvobject>
    <wvobject fp_name="/project_tb/UUT/state_curr" type="other">
       <obj_property name="ElementShortName">state_curr</obj_property>
       <obj_property name="ObjectShortName">state_curr</obj_property>
@@ -83,36 +67,20 @@
       <obj_property name="ElementShortName">state_next</obj_property>
       <obj_property name="ObjectShortName">state_next</obj_property>
    </wvobject>
-   <wvobject fp_name="/project_tb/UUT/CONVOLUTOR12/i_data" type="logic">
-      <obj_property name="ElementShortName">i_data</obj_property>
-      <obj_property name="ObjectShortName">i_data</obj_property>
+   <wvobject fp_name="/project_tb/UUT/global_counter" type="other">
+      <obj_property name="ElementShortName">global_counter</obj_property>
+      <obj_property name="ObjectShortName">global_counter</obj_property>
    </wvobject>
-   <wvobject fp_name="/project_tb/UUT/CONVOLUTOR12/i_done" type="logic">
-      <obj_property name="ElementShortName">i_done</obj_property>
-      <obj_property name="ObjectShortName">i_done</obj_property>
+   <wvobject fp_name="/project_tb/UUT/local_counter" type="other">
+      <obj_property name="ElementShortName">local_counter</obj_property>
+      <obj_property name="ObjectShortName">local_counter</obj_property>
    </wvobject>
-   <wvobject fp_name="/project_tb/UUT/CONVOLUTOR12/e_conv" type="logic">
-      <obj_property name="ElementShortName">e_conv</obj_property>
-      <obj_property name="ObjectShortName">e_conv</obj_property>
+   <wvobject fp_name="/project_tb/UUT/quantity" type="array">
+      <obj_property name="ElementShortName">quantity[7:0]</obj_property>
+      <obj_property name="ObjectShortName">quantity[7:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/project_tb/UUT/CONVOLUTOR12/o_p1k" type="logic">
-      <obj_property name="ElementShortName">o_p1k</obj_property>
-      <obj_property name="ObjectShortName">o_p1k</obj_property>
-   </wvobject>
-   <wvobject fp_name="/project_tb/UUT/CONVOLUTOR12/o_p2k" type="logic">
-      <obj_property name="ElementShortName">o_p2k</obj_property>
-      <obj_property name="ObjectShortName">o_p2k</obj_property>
-   </wvobject>
-   <wvobject fp_name="/project_tb/UUT/CONVOLUTOR12/state_curr" type="other">
-      <obj_property name="ElementShortName">state_curr</obj_property>
-      <obj_property name="ObjectShortName">state_curr</obj_property>
-   </wvobject>
-   <wvobject fp_name="/project_tb/UUT/CONVOLUTOR12/state_next" type="other">
-      <obj_property name="ElementShortName">state_next</obj_property>
-      <obj_property name="ObjectShortName">state_next</obj_property>
-   </wvobject>
-   <wvobject fp_name="/project_tb/UUT/o_convcount" type="array">
-      <obj_property name="ElementShortName">o_convcount[3:0]</obj_property>
-      <obj_property name="ObjectShortName">o_convcount[3:0]</obj_property>
+   <wvobject fp_name="/project_tb/UUT/word_to_save" type="array">
+      <obj_property name="ElementShortName">word_to_save[7:0]</obj_property>
+      <obj_property name="ObjectShortName">word_to_save[7:0]</obj_property>
    </wvobject>
 </wave_config>

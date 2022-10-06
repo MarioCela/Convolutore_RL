@@ -98,6 +98,8 @@ read_xdc C:/Users/cogol/Documents/project_reti_logiche/project_reti_logiche.srcs
 set_property used_in_implementation false [get_files C:/Users/cogol/Documents/project_reti_logiche/project_reti_logiche.srcs/constrs_1/new/clock.xdc]
 
 set_param ips.enableIPCacheLiteLoad 1
+
+read_checkpoint -auto_incremental -incremental C:/Users/cogol/Documents/project_reti_logiche/project_reti_logiche.srcs/utils_1/imports/synth_1/project_reti_logiche.dcp
 close [open __synthesis_is_running__ w]
 
 OPTRACE "synth_design" START { }
