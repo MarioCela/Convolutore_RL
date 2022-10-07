@@ -39,8 +39,8 @@ architecture BEHAVIORAL of project_reti_logiche is
         );
     end component;
 
-    type state is (S_WAIT, S_FIRST_WORD, S_COMPARISON, S_READ_WORD, S_CONV, S_SAVE_P1P2, S_SAVE_WORD1, S_SAVE_WORD_2, S_DONE);
-    signal state_curr, state_next : state;
+    type state is (S_WAIT, S_FIRST_WORD, S_COMPARISON, S_READ_WORD, C00, C01, C10, C11, S_CONV, S_SAVE_WORD1, S_SAVE_WORD_2, S_DONE);
+    signal state_curr, state_next, future_state : state;
     signal i_FSMdata, i_FSMdone, i_FSMconv : std_logic;
     signal p1p2 : std_logic_vector(1 downto 0) := "00";
     constant READ_BOTTOM     : std_logic_vector (15 downto 0) := "0000000000000000";
@@ -52,16 +52,9 @@ architecture BEHAVIORAL of project_reti_logiche is
     signal word_to_process : std_logic_vector (7 downto 0);
     signal word_to_save : std_logic_vector (15 downto 0) := (others => '0');
     signal temp_value : std_logic;
+    signal temp_index : INTEGER range 0 to 16 := 0;
 
 begin
-    CONVOLUTOR12: convolutor port map(
-            i_clk => i_clk,
-            i_rst => i_rst,
-            i_data => i_FSMdata,
-            i_done => i_FSMdone,
-            e_conv => i_FSMconv,
-            o_p12k => p1p2
-        );
 
     process(i_clk, i_rst)
     begin
@@ -109,22 +102,65 @@ begin
                 word_to_process <= i_data;
                 o_en <= '0';
                 state_next <= S_CONV;
+                future_state <= C00;
             when S_CONV =>
                 -- convoluting
                 temp_value <= std_logic(word_to_process(7));
                 word_to_process <= word_to_process(6 downto 0) & "0";
                 local_counter <= local_counter + 1;
-                if (local_counter = 9) then
+                if (local_counter = 8) then
                     state_next <= S_SAVE_WORD1;
                 else
-                    i_FSMconv <= '1';
-                    i_FSMdata <= temp_value;
-                    state_next <= S_SAVE_P1P2;
+                    state_next <= future_state;
                 end if;
-            when S_SAVE_P1P2 =>
-                i_FSMconv <= '0';
-                word_to_save <= word_to_save(13 downto 0) & p1p2;
-                state_next <= S_CONV;
+            when C00 =>
+                if (temp_value = '1') then
+                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
+                    word_to_save(1 downto 0) <= "11";
+                    future_state <= C10;
+                    state_next <= S_CONV;
+                else
+                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
+                    word_to_save(1 downto 0) <= "00";
+                    future_state <= C00;
+                    state_next <= S_CONV;
+                end if;
+            when C01 =>
+                if (temp_value = '1') then
+                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
+                    word_to_save(1 downto 0) <= "00";
+                    future_state <= C10;
+                    state_next <= S_CONV;
+                else
+                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
+                    word_to_save(1 downto 0) <= "11";
+                    future_state <= C00;
+                    state_next <= S_CONV;
+                end if;
+            when C10 =>
+                if (temp_value = '1') then
+                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
+                    word_to_save(1 downto 0) <= "10";
+                    future_state <= C11;
+                    state_next <= S_CONV;
+                else
+                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
+                    word_to_save(1 downto 0) <= "01";
+                    future_state <= C01;
+                    state_next <= S_CONV;
+                end if;
+            when C11 =>
+                if (temp_value = '1') then
+                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
+                    word_to_save(1 downto 0) <= "01";
+                    future_state <= C11;
+                    state_next <= S_CONV;
+                else
+                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
+                    word_to_save(1 downto 0) <= "10";
+                    future_state <= C01;
+                    state_next <= S_CONV;
+                end if;
             when S_SAVE_WORD1 =>
                 -- saving word1 in RAM
                 o_en <= '1';
@@ -140,82 +176,6 @@ begin
             when S_DONE =>
                 o_done <= '1';
                 state_next <= S_WAIT;
-        end case;
-    end process;
-end BEHAVIORAL;
-
-
-------------------------------------------
-------------------------------------------
-
-
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
-use IEEE.STD_LOGIC_ARITH.all;
-
-entity convolutor is
-    port (
-        i_clk : in std_logic;
-        i_rst : in std_logic;
-        i_data : in std_logic;
-        i_done : in std_logic;
-        e_conv : in std_logic;
-        o_p12k	: out std_logic_vector(1 downto 0)
-    );
-end entity;
-
-architecture BEHAVIORAL of convolutor is
-
-    type state is (C00,C01,C10,C11);
-    signal state_curr, state_next: state;
-
-begin
-    process(i_clk, i_rst, e_conv, i_done)
-    begin
-        if ((i_rst = '1') or (i_done = '1')) then
-            state_curr <= C00;
-        elsif ((rising_edge(i_clk)) and (e_conv = '1')) then
-            state_curr <= state_next;
-        end if;
-    end process;
-
-    process(state_curr, i_data)
-    begin
-
-        case state_curr is
-            when C00 =>
-                if (i_data = '1') then
-                    o_p12k <= "11";
-                    state_next <= C10;
-                else
-                    o_p12k <= "00";
-                    state_next <= C00;
-                end if;
-            when C01 =>
-                if (i_data = '1') then
-                    o_p12k <= "00";
-                    state_next <= C10;
-                elsif (i_data = '0') then
-                    o_p12k <= "11";
-                    state_next <= C00;
-                end if;
-            when C10 =>
-                if (i_data = '1') then
-                    o_p12k <= "10";
-                    state_next <= C11;
-                elsif (i_data = '0') then
-                    o_p12k <= "01";
-                    state_next <= C01;
-                end if;
-            when C11 =>
-                if (i_data = '1') then
-                    o_p12k <= "01";
-                    state_next <= C11;
-                elsif (i_data = '0') then
-                    o_p12k <= "10";
-                    state_next <= C01;
-                end if;
         end case;
     end process;
 end BEHAVIORAL;
