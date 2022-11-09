@@ -29,8 +29,8 @@ end project_reti_logiche;
 architecture BEHAVIORAL of project_reti_logiche is
 
     type state is (S_IDLE, S_READ_LENGTH, S_WAIT_RESPONSE, S_READ_WORD, S_SAVE_WORD, S_WRITE_WORD1, S_WRITE_WORD2, S_CONV, S_DONE, C00, C01, C10, C11);
-    signal state_curr, state_next, future_state, last_state: state;
-    signal length, word_read, word_to_save: std_logic_vector (7 downto 0);
+    signal state_curr, state_next, future_state: state;
+    signal length, word_to_process, word_to_save: std_logic_vector (7 downto 0);
     signal save_length, save_word, write_word1, write_word2, flag, got_length: BOOLEAN := false;
     signal word_write_index  : INTEGER range 0 to 16385 := 0;
     signal global_counter    : INTEGER range 0 to 16385 := 0;
@@ -107,7 +107,7 @@ begin
                 end if;
             when S_SAVE_WORD =>
                 save_word <= false;
-                word_read <= i_data;
+                word_to_process <= i_data;
                 local_counter <= 0;
                 -- write_index <= 9;
                 state_next <= S_CONV;
@@ -134,53 +134,44 @@ begin
                     state_next <= future_state;
                 end if;
             when C00 =>
-                if (std_logic(word_read(7 - local_counter)) = '1') then
+                if (std_logic(word_to_process(7 - local_counter)) = '1') then 
                     -- C10, 11
                     word_to_save(write_index downto (write_index - 1)) <= "11";
                     future_state <= C10;
-                else
-                    -- C00, 00
+                else -- C00, 00
                     word_to_save(write_index downto (write_index - 1)) <= "00";
                     future_state <= C00;
                 end if;
-                last_state <= C00;
                 state_next <= S_CONV;
             when C01 =>
-                if (std_logic(word_read(7 - local_counter)) = '1') then
+                if (std_logic(word_to_process(7 - local_counter)) = '1') then 
                     -- C10, 00
                     word_to_save(write_index downto (write_index - 1)) <= "00";
                     future_state <= C10;
-                else
-                    -- C00, 11
+                else -- C00, 11
                     word_to_save(write_index downto (write_index - 1)) <= "11";
                     future_state <= C00 ;
                 end if;
-                last_state <= C01;
                 state_next <= S_CONV;
             when C10 =>
-                if (std_logic(word_read(7 - local_counter)) = '1') then
+                if (std_logic(word_to_process(7 - local_counter)) = '1') then
                     -- C11, 10
                     word_to_save(write_index downto (write_index - 1)) <= "10";
                     -- it might be possible we'll have to switch 01 and 10
                     future_state <= C11;
-                else
-                    -- C01, 01
+                else -- C01, 01
                     word_to_save(write_index downto (write_index - 1)) <= "01";
                     future_state <= C01;
                 end if;
-                last_state <= C10;
                 state_next <= S_CONV;
-            when C11 =>
-                if (std_logic(word_read(7 - local_counter)) = '1') then
-                    -- C11, 01
+            when C11 => -- C11, 01
+                if (std_logic(word_to_process(7 - local_counter)) = '1') then
                     word_to_save(write_index downto (write_index - 1)) <= "01";
                     future_state <= C11;
-                else
-                    -- C01, 10                    
+                else -- C01, 10                    
                     word_to_save(write_index downto (write_index - 1)) <= "10";
                     future_state <= C01;
                 end if;
-                last_state <= C11;
                 state_next <= S_CONV;
             when S_WRITE_WORD1 =>
                 o_en <= '1';
