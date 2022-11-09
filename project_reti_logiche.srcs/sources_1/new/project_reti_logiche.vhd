@@ -31,7 +31,7 @@ architecture BEHAVIORAL of project_reti_logiche is
     type state is (S_IDLE, S_READ_LENGTH, S_WAIT_RESPONSE, S_READ_WORD, S_SAVE_WORD, S_WRITE_WORD1, S_WRITE_WORD2, S_CONV, S_DONE, C00, C01, C10, C11);
     signal state_curr, state_next, future_state, last_state: state;
     signal length, word_read, word_to_save: std_logic_vector (7 downto 0);
-    signal save_length, save_word, write_word1, write_word2, flag: BOOLEAN := false;
+    signal save_length, save_word, write_word1, write_word2, flag, got_length: BOOLEAN := false;
     signal word_write_index  : INTEGER range 0 to 16385 := 0;
     signal global_counter    : INTEGER range 0 to 16385 := 0;
     signal local_counter     : INTEGER range 0 to 8 := 0;
@@ -54,6 +54,7 @@ begin
     begin
         case state_curr is
             when S_IDLE =>
+                got_length <= false;
                 flag <= true;
                 future_state <= C00;
                 word_write_index <= 0;
@@ -72,6 +73,7 @@ begin
                     state_next <= S_WAIT_RESPONSE;
                 else
                     save_length <= false;
+                    got_length <= true;
                     length <= i_data;
                     state_next <= S_READ_WORD;
                 end if;
@@ -88,14 +90,20 @@ begin
             when S_READ_WORD =>
                 o_en <= '1';
                 o_we <= '0';
-                if (global_counter < length) then
-                    global_counter <= global_counter + 1;
-                    o_address <= READ_BOTTOM + global_counter + 1;
-                    save_word <= true;
-                    state_next <= S_WAIT_RESPONSE;
+                if (got_length = true) then
+                    if (global_counter < length) then
+                        o_en <= '1';
+                        global_counter <= global_counter + 1;
+                        o_address <= READ_BOTTOM + global_counter + 1;
+                        save_word <= true;
+                        state_next <= S_WAIT_RESPONSE;
+                    else
+                        o_en <= '0';
+                        o_done <= '1';
+                        state_next <= S_DONE;
+                    end if;
                 else
-                    o_done <= '1';
-                    state_next <= S_DONE;
+                    state_next <= S_READ_LENGTH;
                 end if;
             when S_SAVE_WORD =>
                 save_word <= false;

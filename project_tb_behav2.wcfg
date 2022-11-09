@@ -10,15 +10,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="25,649,991 ps"></ZoomStartTime>
-      <ZoomEndTime time="25,650,002 ps"></ZoomEndTime>
-      <Cursor1Time time="25,650,000 ps"></Cursor1Time>
+      <ZoomStartTime time="23,943.333 ns"></ZoomStartTime>
+      <ZoomEndTime time="25,991.334 ns"></ZoomEndTime>
+      <Cursor1Time time="25,650.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="462"></NameColumnWidth>
-      <ValueColumnWidth column_width="225"></ValueColumnWidth>
+      <ValueColumnWidth column_width="219"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="18" />
+   <WVObjectSize size="19" />
    <wvobject fp_name="/project_tb/tb_done" type="logic">
       <obj_property name="ElementShortName">tb_done</obj_property>
       <obj_property name="ObjectShortName">tb_done</obj_property>
@@ -90,5 +90,9 @@
    <wvobject fp_name="/project_tb/UUT/length" type="array">
       <obj_property name="ElementShortName">length[7:0]</obj_property>
       <obj_property name="ObjectShortName">length[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/project_tb/UUT/state_curr" type="other">
+      <obj_property name="ElementShortName">state_curr</obj_property>
+      <obj_property name="ObjectShortName">state_curr</obj_property>
    </wvobject>
 </wave_config>
