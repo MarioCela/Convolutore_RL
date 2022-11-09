@@ -10,15 +10,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
-      <ZoomEndTime time="3.075041 us"></ZoomEndTime>
-      <Cursor1Time time="0.797000 us"></Cursor1Time>
+      <ZoomStartTime time="16,119.926 ns"></ZoomStartTime>
+      <ZoomEndTime time="16,996.015 ns"></ZoomEndTime>
+      <Cursor1Time time="16,160.218 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="327"></NameColumnWidth>
-      <ValueColumnWidth column_width="152"></ValueColumnWidth>
+      <ValueColumnWidth column_width="110"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="16" />
+   <WVObjectSize size="21" />
    <wvobject fp_name="/project_tb/tb_done" type="logic">
       <obj_property name="ElementShortName">tb_done</obj_property>
       <obj_property name="ObjectShortName">tb_done</obj_property>
@@ -67,20 +67,40 @@
       <obj_property name="ElementShortName">state_next</obj_property>
       <obj_property name="ObjectShortName">state_next</obj_property>
    </wvobject>
-   <wvobject fp_name="/project_tb/UUT/global_counter" type="other">
-      <obj_property name="ElementShortName">global_counter</obj_property>
-      <obj_property name="ObjectShortName">global_counter</obj_property>
+   <wvobject fp_name="/project_tb/UUT/length" type="array">
+      <obj_property name="ElementShortName">length[7:0]</obj_property>
+      <obj_property name="ObjectShortName">length[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/project_tb/UUT/word_read" type="array">
+      <obj_property name="ElementShortName">word_read[7:0]</obj_property>
+      <obj_property name="ObjectShortName">word_read[7:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/project_tb/UUT/local_counter" type="other">
       <obj_property name="ElementShortName">local_counter</obj_property>
       <obj_property name="ObjectShortName">local_counter</obj_property>
    </wvobject>
-   <wvobject fp_name="/project_tb/UUT/quantity" type="array">
-      <obj_property name="ElementShortName">quantity[7:0]</obj_property>
-      <obj_property name="ObjectShortName">quantity[7:0]</obj_property>
+   <wvobject fp_name="/project_tb/UUT/global_counter" type="other">
+      <obj_property name="ElementShortName">global_counter</obj_property>
+      <obj_property name="ObjectShortName">global_counter</obj_property>
+   </wvobject>
+   <wvobject fp_name="/project_tb/UUT/save_length" type="other">
+      <obj_property name="ElementShortName">save_length</obj_property>
+      <obj_property name="ObjectShortName">save_length</obj_property>
+   </wvobject>
+   <wvobject fp_name="/project_tb/UUT/save_word" type="other">
+      <obj_property name="ElementShortName">save_word</obj_property>
+      <obj_property name="ObjectShortName">save_word</obj_property>
    </wvobject>
    <wvobject fp_name="/project_tb/UUT/word_to_save" type="array">
       <obj_property name="ElementShortName">word_to_save[7:0]</obj_property>
       <obj_property name="ObjectShortName">word_to_save[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/project_tb/UUT/word_read" type="array">
+      <obj_property name="ElementShortName">word_read[7:0]</obj_property>
+      <obj_property name="ObjectShortName">word_read[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/project_tb/UUT/write_index" type="other">
+      <obj_property name="ElementShortName">write_index</obj_property>
+      <obj_property name="ObjectShortName">write_index</obj_property>
    </wvobject>
 </wave_config>

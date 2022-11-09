@@ -10,8 +10,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use ieee.NUMERIC_STD.all;
+USE IEEE.NUMERIC_STD.ALL;
 
 entity project_reti_logiche is
     Port (
@@ -28,38 +27,24 @@ entity project_reti_logiche is
 end project_reti_logiche;
 
 architecture BEHAVIORAL of project_reti_logiche is
-    component convolutor is
-        Port (
-            i_clk   : in std_logic;
-            i_rst   : in std_logic;
-            i_data  : in std_logic;
-            i_done  : in std_logic;
-            e_conv  : in std_logic;
-            o_p12k   : out std_logic_vector(1 downto 0)
-        );
-    end component;
 
-    type state is (S_WAIT, S_FIRST_WORD, S_COMPARISON, S_READ_WORD, C00, C01, C10, C11, S_CONV, S_SAVE_WORD1, S_SAVE_WORD_2, S_DONE);
-    signal state_curr, state_next, future_state : state;
-    signal i_FSMdata, i_FSMdone, i_FSMconv : std_logic;
-    signal p1p2 : std_logic_vector(1 downto 0) := "00";
+    type state is (S_IDLE, S_READ_LENGTH, S_WAIT_RESPONSE, S_READ_WORD, S_SAVE_WORD, S_WRITE_WORD1, S_WRITE_WORD2, S_CONV, S_DONE, C00, C01, C10, C11);
+    signal state_curr, state_next, future_state, last_state: state;
+    signal length, word_read, word_to_save: std_logic_vector (7 downto 0);
+    signal save_length, save_word, write_word1, write_word2: BOOLEAN := false;
+    signal word_write_index  : INTEGER range 0 to 16385 := 0;
+    signal global_counter    : INTEGER range 0 to 16385 := 0;
+    signal local_counter     : INTEGER range 0 to 8 := 0;
+    signal write_index       : INTEGER range 0 to 16 := 0;
     constant READ_BOTTOM     : std_logic_vector (15 downto 0) := "0000000000000000";
     constant WRITE_BOTTOM    : std_logic_vector (15 downto 0) := "0000001111101000";
-
-    signal quantity : std_logic_vector (7 downto 0);
-    signal global_counter : INTEGER range 0 to 16385 := 0;
-    signal local_counter : INTEGER range 0 to 8 := 0;
-    signal word_to_process : std_logic_vector (7 downto 0);
-    signal word_to_save : std_logic_vector (15 downto 0) := (others => '0');
-    signal temp_value : std_logic;
-    signal temp_index : INTEGER range 0 to 16 := 0;
 
 begin
 
     process(i_clk, i_rst)
     begin
         if (i_rst='1') then
-            state_curr <= S_WAIT;
+            state_curr <= S_IDLE;
         elsif rising_edge(i_clk) then
             state_curr <= state_next;
         end if;
@@ -68,114 +53,145 @@ begin
     process (state_curr, i_start)
     begin
         case state_curr is
-            when S_WAIT =>
+            when S_IDLE =>
+                future_state <= C00;
+                word_write_index <= 0;
+                global_counter <= 0;
                 o_address <= READ_BOTTOM;
-                o_en <= '1';
+                o_en <= '0';
                 o_we <= '0';
                 if (i_start = '1') then
-                    state_next <= S_FIRST_WORD;
-                else
-                    state_next <= S_WAIT;
+                    state_next <= S_READ_LENGTH;
                 end if;
-            when S_FIRST_WORD =>
-                -- reading number of words to elaborate
-                quantity <= i_data;
-                o_en <= '0';
-                global_counter <= 0;
-                o_done <= '0';
-                state_next <= S_COMPARISON;
-            when S_COMPARISON =>
-                -- comparison between "quantity" and "global_counter"
-                if (quantity < global_counter) then
-                    state_next <= S_DONE;
+            when S_READ_LENGTH =>
+                o_en <= '1';
+                if save_length = false then
+                    save_length <= true;
+                    state_next <= S_WAIT_RESPONSE;
                 else
-                    global_counter <= global_counter + 1;
-                    local_counter <= 0;
-                    -- o_address <= "0000000000000010";
-                    o_address <= std_logic_vector(to_unsigned(global_counter, 16)) + "1";
-                    o_en <= '1';
-                    o_we <= '0';
+                    save_length <= false;
+                    length <= i_data;
+                    state_next <= S_READ_WORD;
+                end if;
+            when S_WAIT_RESPONSE =>
+                if save_length = true then
+                    state_next <= S_READ_LENGTH;
+                elsif save_word = true then
+                    state_next <= S_SAVE_WORD;
+                elsif write_word1 = true then
+                    state_next <= S_CONV;
+                elsif write_word2 = true then
                     state_next <= S_READ_WORD;
                 end if;
             when S_READ_WORD =>
-                -- enable counter and memory read
-                word_to_process <= i_data;
-                o_en <= '0';
-                state_next <= S_CONV;
-                future_state <= C00;
-            when S_CONV =>
-                -- convoluting
-                temp_value <= std_logic(word_to_process(7));
-                word_to_process <= word_to_process(6 downto 0) & "0";
-                local_counter <= local_counter + 1;
-                if (local_counter = 8) then
-                    state_next <= S_SAVE_WORD1;
+                o_en <= '1';
+                o_we <= '0';
+                if (global_counter < length) then
+                    global_counter <= global_counter + 1;
+                    o_address <= READ_BOTTOM + global_counter + 1;
+                    save_word <= true;
+                    state_next <= S_WAIT_RESPONSE;
                 else
+                    o_done <= '1';
+                    state_next <= S_DONE;
+                end if;
+            when S_SAVE_WORD =>
+                save_word <= false;
+                word_read <= i_data;
+                local_counter <= 0;
+                write_index <= 9;
+                state_next <= S_CONV;
+            when S_CONV =>
+                o_en <= '0';
+                o_we <= '0';
+                if local_counter = 3 then
+                    write_index <= 9;
+                    local_counter <= local_counter + 1;
+                    state_next <= S_WRITE_WORD1;
+                elsif local_counter = 7 then
+                    write_index <= 9;
+                    local_counter <= local_counter + 1;
+                    state_next <= S_WRITE_WORD2;
+                else
+                    write_index <= write_index - 2;
+                    if (write_word1 = true) or (write_word2 = true) then
+                        write_word1 <= false;
+                        write_word2 <= false;
+                    else
+                        local_counter <= local_counter + 1;
+                    end if;
                     state_next <= future_state;
                 end if;
             when C00 =>
-                if (temp_value = '1') then
-                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
-                    word_to_save(1 downto 0) <= "11";
+                if (std_logic(word_read(7 - local_counter)) = '1') then
+                    -- C10, 11
+                    word_to_save(write_index downto (write_index - 1)) <= "11";
                     future_state <= C10;
-                    state_next <= S_CONV;
                 else
-                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
-                    word_to_save(1 downto 0) <= "00";
+                    -- C00, 00
+                    word_to_save(write_index downto (write_index - 1)) <= "00";
                     future_state <= C00;
-                    state_next <= S_CONV;
                 end if;
+                last_state <= C00;
+                state_next <= S_CONV;
             when C01 =>
-                if (temp_value = '1') then
-                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
-                    word_to_save(1 downto 0) <= "00";
+                if (std_logic(word_read(7 - local_counter)) = '1') then
+                    -- C10, 00
+                    word_to_save(write_index downto (write_index - 1)) <= "00";
                     future_state <= C10;
-                    state_next <= S_CONV;
                 else
-                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
-                    word_to_save(1 downto 0) <= "11";
-                    future_state <= C00;
-                    state_next <= S_CONV;
+                    -- C00, 11
+                    word_to_save(write_index downto (write_index - 1)) <= "11";
+                    future_state <= C00 ;
                 end if;
+                last_state <= C01;
+                state_next <= S_CONV;
             when C10 =>
-                if (temp_value = '1') then
-                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
-                    word_to_save(1 downto 0) <= "10";
+                if (std_logic(word_read(7 - local_counter)) = '1') then
+                    -- C11, 10
+                    word_to_save(write_index downto (write_index - 1)) <= "10";
+                    -- it might be possible we'll have to switch 01 and 10
                     future_state <= C11;
-                    state_next <= S_CONV;
                 else
-                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
-                    word_to_save(1 downto 0) <= "01";
+                    -- C01, 01
+                    word_to_save(write_index downto (write_index - 1)) <= "01";
                     future_state <= C01;
-                    state_next <= S_CONV;
                 end if;
+                last_state <= C10;
+                state_next <= S_CONV;
             when C11 =>
-                if (temp_value = '1') then
-                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
-                    word_to_save(1 downto 0) <= "01";
+                if (std_logic(word_read(7 - local_counter)) = '1') then
+                    -- C11, 01
+                    word_to_save(write_index downto (write_index - 1)) <= "01";
                     future_state <= C11;
-                    state_next <= S_CONV;
                 else
-                    word_to_save(15 downto 2) <= word_to_save(13 downto 0);
-                    word_to_save(1 downto 0) <= "10";
+                    -- C01, 10                    
+                    word_to_save(write_index downto (write_index - 1)) <= "10";
                     future_state <= C01;
-                    state_next <= S_CONV;
                 end if;
-            when S_SAVE_WORD1 =>
-                -- saving word1 in RAM
+                last_state <= C11;
+                state_next <= S_CONV;
+            when S_WRITE_WORD1 =>
                 o_en <= '1';
                 o_we <= '1';
-                o_address <= WRITE_BOTTOM + ("00000000" & std_logic_vector(to_unsigned(global_counter, 8))) - '1';
-                o_data <= word_to_save(15 downto 8);
-                state_next <= S_SAVE_WORD_2;                
-            when S_SAVE_WORD_2 =>
-                -- saving word2 in RAM
-                o_address <= WRITE_BOTTOM + ("00000000" & std_logic_vector(to_unsigned(global_counter, 7)));
-                o_data <= word_to_save(7 downto 0);
-                state_next <= S_COMPARISON;
+                o_data <= word_to_save;
+                write_word1 <= true;
+                word_write_index <= word_write_index + 1;
+                o_address <= WRITE_BOTTOM + word_write_index;
+                state_next <= S_WAIT_RESPONSE;
+            when S_WRITE_WORD2 =>
+                o_en <= '1';
+                o_we <= '1';
+                o_data <= word_to_save;
+                write_word2 <= true;
+                word_write_index <= word_write_index + 1;
+                o_address <= WRITE_BOTTOM + word_write_index;
+                state_next <= S_WAIT_RESPONSE;
             when S_DONE =>
-                o_done <= '1';
-                state_next <= S_WAIT;
+                o_done <= '0';                                  
+                if (i_start = '0') then
+                    state_next <= S_IDLE;
+                end if;
         end case;
     end process;
 end BEHAVIORAL;
