@@ -31,7 +31,7 @@ architecture BEHAVIORAL of project_reti_logiche is
     type state is (S_IDLE, S_READ_LENGTH, S_WAIT_RESPONSE, S_READ_WORD, S_SAVE_WORD, S_WRITE_WORD1, S_WRITE_WORD2, S_CONV, S_DONE, C00, C01, C10, C11);
     signal state_curr, state_next, future_state, last_state: state;
     signal length, word_read, word_to_save: std_logic_vector (7 downto 0);
-    signal save_length, save_word, write_word1, write_word2: BOOLEAN := false;
+    signal save_length, save_word, write_word1, write_word2, flag: BOOLEAN := false;
     signal word_write_index  : INTEGER range 0 to 16385 := 0;
     signal global_counter    : INTEGER range 0 to 16385 := 0;
     signal local_counter     : INTEGER range 0 to 8 := 0;
@@ -54,6 +54,7 @@ begin
     begin
         case state_curr is
             when S_IDLE =>
+                flag <= true;
                 future_state <= C00;
                 word_write_index <= 0;
                 global_counter <= 0;
@@ -65,6 +66,7 @@ begin
                 end if;
             when S_READ_LENGTH =>
                 o_en <= '1';
+                write_index <= 9;
                 if save_length = false then
                     save_length <= true;
                     state_next <= S_WAIT_RESPONSE;
@@ -99,7 +101,7 @@ begin
                 save_word <= false;
                 word_read <= i_data;
                 local_counter <= 0;
-                write_index <= 9;
+                -- write_index <= 9;
                 state_next <= S_CONV;
             when S_CONV =>
                 o_en <= '0';
@@ -114,9 +116,10 @@ begin
                     state_next <= S_WRITE_WORD2;
                 else
                     write_index <= write_index - 2;
-                    if (write_word1 = true) or (write_word2 = true) then
+                    if (write_word1 = true) or (write_word2 = true) or flag = true then
                         write_word1 <= false;
                         write_word2 <= false;
+                        flag <= false;
                     else
                         local_counter <= local_counter + 1;
                     end if;

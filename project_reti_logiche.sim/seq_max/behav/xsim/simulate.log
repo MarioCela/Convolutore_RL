@@ -1,0 +1,7 @@
+Time resolution is 1 ps
+Failure: Simulation Ended! TEST PASSATO
+Time: 638450 ns  Iteration: 0  Process: /project_tb/test  File: C:/Users/cogol/Desktop/test_bench/tb_seq_max.vhd
+$finish called at time : 638450 ns : File "C:/Users/cogol/Desktop/test_bench/tb_seq_max.vhd" Line 863
+Failure: Simulation Ended! TEST PASSATO
+Time: 1276950 ns  Iteration: 0  Process: /project_tb/test  File: C:/Users/cogol/Desktop/test_bench/tb_seq_max.vhd
+$finish called at time : 1276950 ns : File "C:/Users/cogol/Desktop/test_bench/tb_seq_max.vhd" Line 863

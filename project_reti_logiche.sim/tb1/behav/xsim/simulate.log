@@ -1,0 +1,4 @@
+Time resolution is 1 ps
+Failure: Simulation Ended! TEST PASSATO
+Time: 5177500 ps  Iteration: 0  Process: /project_tb/test  File: C:/Users/cogol/Desktop/test_bench/tb1.vhd
+$finish called at time : 5177500 ps : File "C:/Users/cogol/Desktop/test_bench/tb1.vhd" Line 201
