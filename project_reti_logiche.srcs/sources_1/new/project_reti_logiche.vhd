@@ -31,7 +31,6 @@ architecture BEHAVIORAL of project_reti_logiche is
     type state is (S_IDLE, S_READ_LENGTH, S_WAIT_RESPONSE, S_READ_WORD, S_SAVE_WORD, S_WRITE_WORD, S_CONV, S_DONE, C00, C01, C10, C11);
     signal state_curr, state_next, state_future, state_last: state;
     signal length, word_to_process, word_to_save: std_logic_vector (7 downto 0);
-    signal write_word1, write_word2, flag: BOOLEAN := false;
     signal writing_counter  : INTEGER range 0 to 16385 := 0;
     signal reading_counter    : INTEGER range 0 to 16385 := 0;
     signal local_counter     : INTEGER range 0 to 8 := 0;
@@ -64,13 +63,10 @@ begin
                 if (i_start = '1') then
                     state_next <= S_READ_LENGTH;
                 end if;
-                
-                -- got_length <= false;
-                flag <= true;
-                writing_counter <= 0;
-                reading_counter <= 0;
             when S_READ_LENGTH =>
                 o_en <= '1';
+                writing_counter <= 0;
+                reading_counter <= 0;
                 if state_last = S_IDLE then
                     state_next <= S_WAIT_RESPONSE;
                 elsif state_last = S_WAIT_RESPONSE then
@@ -83,9 +79,9 @@ begin
                     state_next <= S_READ_LENGTH;
                 elsif state_last = S_READ_WORD then
                     state_next <= S_SAVE_WORD;
-                elsif write_word1 = true then
+                elsif state_last = S_WRITE_WORD and local_counter = 3 then
                     state_next <= S_CONV;
-                elsif write_word2 = true then
+                elsif state_last = S_WRITE_WORD and local_counter = -1 then
                     state_next <= S_READ_WORD;
                 end if;
                 state_last <= S_WAIT_RESPONSE;
@@ -104,30 +100,21 @@ begin
                 end if;
                 state_last <= S_READ_WORD;
             when S_SAVE_WORD =>
+                o_en <= '0';
                 word_to_process <= i_data;
                 local_counter <= 7;
-                -- write_index <= 9;
                 state_next <= S_CONV;
                 state_last <= S_SAVE_WORD;
             when S_CONV =>
-                o_en <= '0';
                 o_we <= '0';
-                if local_counter = 4 then
+                if local_counter = 4 or local_counter = 0 then
                     write_index <= 9;
-                    local_counter <= local_counter - 1;
-                    write_word1 <= true;
-                    state_next <= S_WRITE_WORD;
-                elsif local_counter = 0 then
-                    write_index <= 9;
-                    write_word2 <= true;
                     local_counter <= local_counter - 1;
                     state_next <= S_WRITE_WORD;
                 else
                     write_index <= write_index - 2;
-                    if (write_word1 = true) or (write_word2 = true) or flag = true then
-                        write_word1 <= false;
-                        write_word2 <= false;
-                        flag <= false;
+                    if state_last = S_WAIT_RESPONSE or state_last = S_SAVE_WORD then
+                   
                     else
                         local_counter <= local_counter - 1;
                     end if;
@@ -176,7 +163,7 @@ begin
                     word_to_save(write_index downto (write_index - 1)) <= "10";
                     state_future <= C01;
                 end if;
-                                state_last <= C11;
+                state_last <= C11;
                 state_next <= S_CONV;
             when S_WRITE_WORD =>
                 o_en <= '1';
