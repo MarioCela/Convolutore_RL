@@ -1,0 +1,4 @@
+Time resolution is 1 ps
+Failure: TEST FALLITO
+Time: 2550100 ps  Iteration: 0  Process: /project_tb/test  File: C:/Users/cogol/Desktop/test_bench/tb2.vhd
+$finish called at time : 2550100 ps : File "C:/Users/cogol/Desktop/test_bench/tb2.vhd" Line 176

@@ -30,9 +30,9 @@ architecture BEHAVIORAL of project_reti_logiche is
 
     type state is (S_IDLE, S_READ_LENGTH, S_WAIT_RESPONSE, S_READ_WORD, S_SAVE_WORD, S_WRITE_WORD, S_CONV, S_DONE, C00, C01, C10, C11);
     signal state_curr, state_next, state_future, state_last: state;
-    signal length, word_to_process, word_to_save: std_logic_vector (7 downto 0);
-    signal writing_counter  : INTEGER range 0 to 16385 := 0;
-    signal reading_counter    : INTEGER range 0 to 16385 := 0;
+    signal length, word_to_process, word_to_save: std_logic_vector (7 downto 0) := (others => '0');
+    signal writing_counter   : INTEGER range 0 to 16385 := 0;
+    signal reading_counter   : INTEGER range 0 to 16385 := 0;
     signal local_counter     : INTEGER range 0 to 8 := 0;
     signal write_index       : INTEGER range 0 to 16 := 0;
     constant READ_BOTTOM     : std_logic_vector (15 downto 0) := "0000000000000000";
@@ -51,25 +51,36 @@ begin
 
     process (state_curr, i_start)
     begin
+        o_en <= '0';
+        o_we <= '0';
+        o_done <= '0';
+        o_address <= READ_BOTTOM;
+        writing_counter <= 0;
+        reading_counter <= 0;
+        length <= "00000000";
+        o_data <= "00000000";
+        
         case state_curr is
             when S_IDLE =>
                 -- reset values and wait for start
-                o_en <= '0';
-                o_we <= '0';
-                o_done <= '0';
-                o_address <= READ_BOTTOM;
+                -- o_en <= '0';
+                -- o_we <= '0';
+                -- o_done <= '0';
+                -- o_address <= READ_BOTTOM;
+                -- writing_counter <= 0;
+                -- reading_counter <= 0;
                 state_last <= S_IDLE;
                 state_future <= C00;
                 if (i_start = '1') then
                     state_next <= S_READ_LENGTH;
                 end if;
             when S_READ_LENGTH =>
-                o_en <= '1';
-                writing_counter <= 0;
-                reading_counter <= 0;
                 if state_last = S_IDLE then
+                    o_en <= '1';
+                    length <= "00000000";
                     state_next <= S_WAIT_RESPONSE;
-                elsif state_last = S_WAIT_RESPONSE then
+                else
+                    o_en <= '0';
                     length <= i_data;
                     state_next <= S_READ_WORD;
                 end if;
@@ -89,6 +100,7 @@ begin
                 o_we <= '0';
                 write_index <= 9;
                 if (reading_counter < length) then
+                    o_done <= '0';
                     o_en <= '1';
                     reading_counter <= reading_counter + 1;
                     o_address <= READ_BOTTOM + reading_counter + 1;
@@ -141,19 +153,18 @@ begin
                     word_to_save(write_index downto (write_index - 1)) <= "11";
                     state_future <= C00 ;
                 end if;
-                                state_last <= C01;
+                state_last <= C01;
                 state_next <= S_CONV;
             when C10 =>
                 if (std_logic(word_to_process(local_counter)) = '1') then
                     -- C11, 10
                     word_to_save(write_index downto (write_index - 1)) <= "10";
-                    -- it might be possible we'll have to switch 01 and 10
                     state_future <= C11;
                 else -- C01, 01
                     word_to_save(write_index downto (write_index - 1)) <= "01";
                     state_future <= C01;
                 end if;
-                                state_last <= C10;
+                state_last <= C10;
                 state_next <= S_CONV;
             when C11 => -- C11, 01
                 if (std_logic(word_to_process(local_counter)) = '1') then
