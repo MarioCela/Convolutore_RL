@@ -1,0 +1,13 @@
+#-----------------------------------------------------------
+# Vivado v2021.2 (64-bit)
+# SW Build 3367213 on Tue Oct 19 02:48:09 MDT 2021
+# IP Build 3369179 on Thu Oct 21 08:25:16 MDT 2021
+# Start of session at: Thu Nov 10 10:16:00 2022
+# Process ID: 15260
+# Current directory: C:/Users/cogol/Documents/project_reti_logiche/project_reti_logiche.runs/impl_1
+# Command line: vivado.exe -log project_reti_logiche.vdi -applog -product Vivado -messageDb vivado.pb -mode batch -source project_reti_logiche.tcl -notrace
+# Log file: C:/Users/cogol/Documents/project_reti_logiche/project_reti_logiche.runs/impl_1/project_reti_logiche.vdi
+# Journal file: C:/Users/cogol/Documents/project_reti_logiche/project_reti_logiche.runs/impl_1\vivado.jou
+# Running On: MateBook13-Alessandro, OS: Windows, CPU Frequency: 2296 MHz, CPU Physical cores: 8, Host memory: 16040 MB
+#-----------------------------------------------------------
+source project_reti_logiche.tcl -notrace
