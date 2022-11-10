@@ -29,9 +29,9 @@ end project_reti_logiche;
 architecture BEHAVIORAL of project_reti_logiche is
 
     type state is (S_IDLE, S_READ_LENGTH, S_WAIT_RESPONSE, S_READ_WORD, S_SAVE_WORD, S_WRITE_WORD, S_CONV, S_DONE, C00, C01, C10, C11);
-    signal state_curr, state_next, state_future: state;
+    signal state_curr, state_next, state_future, state_last: state;
     signal length, word_to_process, word_to_save: std_logic_vector (7 downto 0);
-    signal save_length, save_word, write_word1, write_word2, flag, got_length: BOOLEAN := false;
+    signal write_word1, write_word2, flag: BOOLEAN := false;
     signal writing_counter  : INTEGER range 0 to 16385 := 0;
     signal reading_counter    : INTEGER range 0 to 16385 := 0;
     signal local_counter     : INTEGER range 0 to 8 := 0;
@@ -59,61 +59,56 @@ begin
                 o_we <= '0';
                 o_done <= '0';
                 o_address <= READ_BOTTOM;
+                state_last <= S_IDLE;
                 state_future <= C00;
                 if (i_start = '1') then
                     state_next <= S_READ_LENGTH;
                 end if;
                 
-                got_length <= false;
+                -- got_length <= false;
                 flag <= true;
                 writing_counter <= 0;
                 reading_counter <= 0;
             when S_READ_LENGTH =>
                 o_en <= '1';
-                if save_length = false then
-                    save_length <= true;
+                if state_last = S_IDLE then
                     state_next <= S_WAIT_RESPONSE;
-                else
-                    save_length <= false;
-                    got_length <= true;
+                elsif state_last = S_WAIT_RESPONSE then
                     length <= i_data;
                     state_next <= S_READ_WORD;
                 end if;
+                state_last <= S_READ_LENGTH;
             when S_WAIT_RESPONSE =>
-                if save_length = true then
+                if state_last = S_READ_LENGTH then
                     state_next <= S_READ_LENGTH;
-                elsif save_word = true then
+                elsif state_last = S_READ_WORD then
                     state_next <= S_SAVE_WORD;
                 elsif write_word1 = true then
                     state_next <= S_CONV;
                 elsif write_word2 = true then
                     state_next <= S_READ_WORD;
                 end if;
+                state_last <= S_WAIT_RESPONSE;
             when S_READ_WORD =>
-                o_en <= '1';
                 o_we <= '0';
                 write_index <= 9;
-                if (got_length = true) then
-                    if (reading_counter < length) then
-                        o_en <= '1';
-                        reading_counter <= reading_counter + 1;
-                        o_address <= READ_BOTTOM + reading_counter + 1;
-                        save_word <= true;
-                        state_next <= S_WAIT_RESPONSE;
-                    else
-                        o_en <= '0';
-                        o_done <= '1';
-                        state_next <= S_DONE;
-                    end if;
+                if (reading_counter < length) then
+                    o_en <= '1';
+                    reading_counter <= reading_counter + 1;
+                    o_address <= READ_BOTTOM + reading_counter + 1;
+                    state_next <= S_WAIT_RESPONSE;
                 else
-                    state_next <= S_READ_LENGTH;
+                    o_en <= '0';
+                    o_done <= '1';
+                    state_next <= S_DONE;
                 end if;
+                state_last <= S_READ_WORD;
             when S_SAVE_WORD =>
-                save_word <= false;
                 word_to_process <= i_data;
                 local_counter <= 7;
                 -- write_index <= 9;
                 state_next <= S_CONV;
+                state_last <= S_SAVE_WORD;
             when S_CONV =>
                 o_en <= '0';
                 o_we <= '0';
@@ -138,6 +133,7 @@ begin
                     end if;
                     state_next <= state_future;
                 end if;
+                state_last <= S_CONV;
             when C00 =>
                 if (std_logic(word_to_process(local_counter)) = '1') then 
                     -- C10, 11
@@ -147,6 +143,7 @@ begin
                     word_to_save(write_index downto (write_index - 1)) <= "00";
                     state_future <= C00;
                 end if;
+                state_last <= C00;
                 state_next <= S_CONV;
             when C01 =>
                 if (std_logic(word_to_process(local_counter)) = '1') then 
@@ -157,6 +154,7 @@ begin
                     word_to_save(write_index downto (write_index - 1)) <= "11";
                     state_future <= C00 ;
                 end if;
+                                state_last <= C01;
                 state_next <= S_CONV;
             when C10 =>
                 if (std_logic(word_to_process(local_counter)) = '1') then
@@ -168,6 +166,7 @@ begin
                     word_to_save(write_index downto (write_index - 1)) <= "01";
                     state_future <= C01;
                 end if;
+                                state_last <= C10;
                 state_next <= S_CONV;
             when C11 => -- C11, 01
                 if (std_logic(word_to_process(local_counter)) = '1') then
@@ -177,6 +176,7 @@ begin
                     word_to_save(write_index downto (write_index - 1)) <= "10";
                     state_future <= C01;
                 end if;
+                                state_last <= C11;
                 state_next <= S_CONV;
             when S_WRITE_WORD =>
                 o_en <= '1';
@@ -184,12 +184,14 @@ begin
                 o_data <= word_to_save;
                 writing_counter <= writing_counter + 1;
                 o_address <= WRITE_BOTTOM + writing_counter;
+                state_last <= S_WRITE_WORD;
                 state_next <= S_WAIT_RESPONSE;
             when S_DONE =>
                 o_done <= '0';                                  
                 if (i_start = '0') then
                     state_next <= S_IDLE;
                 end if;
+                state_last <= S_DONE;
         end case;
     end process;
 end BEHAVIORAL;
