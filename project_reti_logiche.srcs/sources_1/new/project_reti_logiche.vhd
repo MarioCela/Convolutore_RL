@@ -111,21 +111,21 @@ begin
             when S_SAVE_WORD =>
                 save_word <= false;
                 word_to_process <= i_data;
-                local_counter <= 0;
+                local_counter <= 7;
                 -- write_index <= 9;
                 state_next <= S_CONV;
             when S_CONV =>
                 o_en <= '0';
                 o_we <= '0';
-                if local_counter = 3 then
+                if local_counter = 4 then
                     write_index <= 9;
-                    local_counter <= local_counter + 1;
+                    local_counter <= local_counter - 1;
                     write_word1 <= true;
                     state_next <= S_WRITE_WORD;
-                elsif local_counter = 7 then
+                elsif local_counter = 0 then
                     write_index <= 9;
                     write_word2 <= true;
-                    local_counter <= local_counter + 1;
+                    local_counter <= local_counter - 1;
                     state_next <= S_WRITE_WORD;
                 else
                     write_index <= write_index - 2;
@@ -134,12 +134,12 @@ begin
                         write_word2 <= false;
                         flag <= false;
                     else
-                        local_counter <= local_counter + 1;
+                        local_counter <= local_counter - 1;
                     end if;
                     state_next <= state_future;
                 end if;
             when C00 =>
-                if (std_logic(word_to_process(7 - local_counter)) = '1') then 
+                if (std_logic(word_to_process(local_counter)) = '1') then 
                     -- C10, 11
                     word_to_save(write_index downto (write_index - 1)) <= "11";
                     state_future <= C10;
@@ -149,7 +149,7 @@ begin
                 end if;
                 state_next <= S_CONV;
             when C01 =>
-                if (std_logic(word_to_process(7 - local_counter)) = '1') then 
+                if (std_logic(word_to_process(local_counter)) = '1') then 
                     -- C10, 00
                     word_to_save(write_index downto (write_index - 1)) <= "00";
                     state_future <= C10;
@@ -159,7 +159,7 @@ begin
                 end if;
                 state_next <= S_CONV;
             when C10 =>
-                if (std_logic(word_to_process(7 - local_counter)) = '1') then
+                if (std_logic(word_to_process(local_counter)) = '1') then
                     -- C11, 10
                     word_to_save(write_index downto (write_index - 1)) <= "10";
                     -- it might be possible we'll have to switch 01 and 10
@@ -170,7 +170,7 @@ begin
                 end if;
                 state_next <= S_CONV;
             when C11 => -- C11, 01
-                if (std_logic(word_to_process(7 - local_counter)) = '1') then
+                if (std_logic(word_to_process(local_counter)) = '1') then
                     word_to_save(write_index downto (write_index - 1)) <= "01";
                     state_future <= C11;
                 else -- C01, 10                    
