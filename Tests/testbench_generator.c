@@ -36,10 +36,11 @@ int main() {
     initialize_vhd_file(testbench);
 
     int *numbers_to_be_elaborated = malloc(number_of_words_to_elaborate);
-    numbers_to_be_elaborated = initialize_RAM(testbench, number_of_words_to_elaborate);
-
+    
     fprintf(testbench, "\n                         0 => std_logic_vector(to_unsigned(  %d  , 8)\n",
             number_of_words_to_elaborate);
+    numbers_to_be_elaborated = initialize_RAM(testbench, number_of_words_to_elaborate);
+
     print_all_the_stuff_before_asserts(testbench);
 
     //convolutor
