@@ -55,19 +55,20 @@ begin
                 when S_IDLE =>
 
                     -- reset values and wait for start
+                    o_address <= READ_BOTTOM;
+                    o_done <= '0';
                     o_en <= '0';
                     o_we <= '0';
-                    o_done <= '0';
-                    o_address <= READ_BOTTOM;
-                    writing_counter <= 0;
-                    reading_counter <= 0;
-                    write_index <= 0;
-                    local_counter <= 0;
+                    o_data <= (others => '0');
+                    state_future <= C00;
+                    state_last <= S_IDLE;
                     length <= (others => '0');
                     word_to_process <= (others => '0');
                     word_to_save <= (others => '0');
-                    state_last <= S_IDLE;
-                    state_future <= C00;
+                    writing_counter <= 0;
+                    reading_counter <= 0;
+                    local_counter <= 0;
+                    write_index <= 0;
 
                     if (i_start = '1') then
                         state_curr <= S_READ_LENGTH;
@@ -90,7 +91,7 @@ begin
                     state_last <= S_READ_LENGTH;
 
                 when S_WAIT_RESPONSE =>
-
+                
                     if state_last = S_READ_LENGTH then
                         state_curr <= S_READ_LENGTH;
 
@@ -100,8 +101,9 @@ begin
                     elsif state_last = S_WRITE_WORD and local_counter = 3 then
                         state_curr <= S_CONV;
 
-                    elsif state_last = S_WRITE_WORD and local_counter = -1 then
+                    else
                         state_curr <= S_READ_WORD;
+                        
                     end if;
 
                     state_last <= S_WAIT_RESPONSE;
@@ -237,6 +239,7 @@ begin
                     state_last <= S_DONE;
 
             end case;
+            
         end if;
 
     end process;

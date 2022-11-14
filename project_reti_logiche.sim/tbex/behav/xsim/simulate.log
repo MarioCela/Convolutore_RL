@@ -1,4 +1,0 @@
-Time resolution is 1 ps
-Failure: Simulation Ended! TEST PASSATO (ENCODE_EXAMPLE)
-Time: 6250 ns  Iteration: 0  Process: /project_tb/test  File: D:/Users/corsair-dragon/Documents/tb_example.vhd
-$finish called at time : 6250 ns : File "D:/Users/corsair-dragon/Documents/tb_example.vhd" Line 112

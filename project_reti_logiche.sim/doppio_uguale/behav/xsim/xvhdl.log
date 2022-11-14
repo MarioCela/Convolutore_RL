@@ -1,2 +1,4 @@
-INFO: [VRFC 10-163] Analyzing VHDL file "C:/Users/cogol/Documents/project_reti_logiche/project_reti_logiche.srcs/sources_1/new/project_reti_logiche.vhd" into library xil_defaultlib
+INFO: [VRFC 10-163] Analyzing VHDL file "D:/Users/corsair-dragon/Documents/Github-Mario/LNProject2022/project_reti_logiche.srcs/sources_1/new/project_reti_logiche.vhd" into library xil_defaultlib
 INFO: [VRFC 10-3107] analyzing entity 'project_reti_logiche'
+INFO: [VRFC 10-163] Analyzing VHDL file "D:/Users/corsair-dragon/Downloads/Tests/tb_doppio_uguale.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'project_tb'

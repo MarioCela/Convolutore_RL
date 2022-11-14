@@ -1,2 +1,4 @@
 Time resolution is 1 ps
-INFO: xsimkernel Simulation Memory Usage: 15296 KB (Peak: 15296 KB), Simulation CPU Usage: 14233 ms
+Failure: Simulation Ended! TEST PASSATO
+Time: 16750100 ps  Iteration: 0  Process: /project_tb/test  File: D:/Users/corsair-dragon/Downloads/Tests/tb_doppio_uguale.vhd
+$finish called at time : 16750100 ps : File "D:/Users/corsair-dragon/Downloads/Tests/tb_doppio_uguale.vhd" Line 117
