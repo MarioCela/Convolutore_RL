@@ -1,0 +1,4 @@
+Time resolution is 1 ps
+Failure: Simulation Ended! TEST PASSATO
+Time: 638550 ns  Iteration: 0  Process: /project_tb/test  File: D:/Users/corsair-dragon/Downloads/Tests/tb_seq_max.vhd
+$finish called at time : 638550 ns : File "D:/Users/corsair-dragon/Downloads/Tests/tb_seq_max.vhd" Line 863
