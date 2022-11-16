@@ -25,6 +25,11 @@ int converter_binary_to_integer(bool *binary);
 
 int main(int argc, char *argv[]) {
     number_of_words_to_elaborate = atoi(argv[1]);
+    
+    if (number_of_words_to_elaborate > 255 || number_of_words_to_elaborate < 0) {
+    	printf("Cannot do it, must insert a positive number that is less than 256\n");
+    	exit(1);
+    }
 
     srand(time(NULL));
 
@@ -118,7 +123,7 @@ void initialize_vhd_file(FILE *tb) {
 int *initialize_RAM(FILE *tb, int number_of_word_to_elaborate) {
     int *words_to_be_elaborated = malloc(number_of_word_to_elaborate);
 
-    for (int i = 0; i < number_of_word_to_elaborate; i++) {
+    for (int i = 0; i <= number_of_word_to_elaborate; i++) {
         int number = rand() % 256;
         words_to_be_elaborated[i] = number;
         fprintf(tb, "                         %d => std_logic_vector(to_unsigned(  %d  , 8)),\n", i + 1, number);
