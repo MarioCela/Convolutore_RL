@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 //creating number of words that will be elaborated
-int number_of_words_to_elaborate = 50;
+int number_of_words_to_elaborate;
 //where we will start to save convoluted words
 int first_RAM_address = 1000;
 //architecture and entity definition
@@ -23,7 +23,9 @@ int converter_binary_to_integer(bool *binary);
 
 
 
-int main() {
+int main(int argc, char *argv[]) {
+    number_of_words_to_elaborate = atoi(argv[1]);
+
     srand(time(NULL));
 
     FILE *testbench = fopen("test.vhd", "w");
