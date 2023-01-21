@@ -27,7 +27,7 @@ flusso continuo Y. Il flusso Y è ottenuto come concatenamento alternato dei due
 Utilizzando la notazione riportata in figura, il bit uk genera i bit p1k e p2k che sono poi
 concatenati per generare un flusso continuo yk (flusso da 1 bit). La sequenza d’uscita Z è la
 parallelizzazione, su 8 bit, del flusso continuo yk.
-La lunghezza del flusso U è 8*W, mentre la lunghezza del flusso Y è 8*W*2 (Z=2*W).
+La lunghezza del flusso U è 8\*W, mentre la lunghezza del flusso Y è 8\*W\*2 (Z=2*W).
 Il convolutore è una macchina sequenziale sincrona con un clock globale e un segnale di
 reset con il seguente diagramma degli stati che ha nel suo 00 lo stato iniziale, con uscite in
 ordine P1K, P2K (ogni transizione è annotata come Uk/p1k, p2k).
