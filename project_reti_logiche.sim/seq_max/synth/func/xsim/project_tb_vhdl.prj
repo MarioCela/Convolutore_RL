@@ -1,6 +1,0 @@
-# compile vhdl design source files
-vhdl xil_defaultlib  \
-"../../../../../../../../Downloads/Tests/tb_seq_max.vhd" \
-
-# Do not sort compile order
-nosort

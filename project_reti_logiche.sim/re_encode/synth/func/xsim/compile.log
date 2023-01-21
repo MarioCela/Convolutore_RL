@@ -1,5 +1,0 @@
-INFO: [VRFC 10-2263] Analyzing Verilog file "D:/Users/corsair-dragon/Documents/Github-Mario/LNProject2022/project_reti_logiche.sim/re_encode/synth/func/xsim/project_tb_func_synth.v" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module project_reti_logiche
-INFO: [VRFC 10-311] analyzing module glbl
-INFO: [VRFC 10-163] Analyzing VHDL file "D:/Users/corsair-dragon/Downloads/Tests/tb_re_encode.vhd" into library xil_defaultlib
-INFO: [VRFC 10-3107] analyzing entity 'project_tb'

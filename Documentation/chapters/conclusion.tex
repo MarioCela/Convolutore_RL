@@ -1,0 +1,6 @@
+Un’ottimizzazione effettuata è stata la rimozione di uno stato intermedio tra la lettura della parola di memoria e l’inizio della sua convoluzione. Abbiamo ovviato al suddetto stato indirizzando direttamente allo stato \textbf{S\_CONV}, successivo allo stato \textbf{S\_WAIT\_RESPONSE}. 
+
+Un’eventuale ulteriore ottimizzazione potrebbe essere introdotta accorpando le funzionalità dello stato \textbf{S\_CONV} negli stati del codificatore convoluzionale (C00, C01, C10, C11), per evitare che la componente debba passare sempre attraverso uno stato “cuscinetto” tra uno stato di convoluzione e l’altro, rallentando la codifica dell’ingresso. Questa strada non è stata seguita per questioni di manutenzione del codice, infatti accorpando le funzionalità dello stato \textbf{S\_CONV} in un solo stato risulta meno dispersivo piuttosto che replicarle per tutti gli stati di convoluzione.
+
+\section{Ulteriori note}
+La versione del software utilizzato per la progettazione e sintesi è \textbf{Vivado ML 2022.2}, la FPGA target scelta, come da specifica, è stata \textbf{Artix-7 FPGA xc7a200tfbg484-1}.

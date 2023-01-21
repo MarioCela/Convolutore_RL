@@ -1,6 +1,0 @@
-# compile vhdl design source files
-vhdl xil_defaultlib  \
-"../../../../../../../../Downloads/Tests/tb_re_encode.vhd" \
-
-# Do not sort compile order
-nosort

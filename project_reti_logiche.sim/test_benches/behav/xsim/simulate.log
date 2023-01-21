@@ -1,5 +1,0 @@
-Time resolution is 1 ps
-Stopped at time : 1005 ns : File "C:/Users/cogol/Desktop/test_bench/tb_esempio_1.vhd" Line 79
-Failure: TEST FALLITO (WORKING ZONE). Expected  209  found 0
-Time: 1232500 ps  Iteration: 0  Process: /project_tb/test  File: C:/Users/cogol/Desktop/test_bench/tb_esempio_1.vhd
-$finish called at time : 1232500 ps : File "C:/Users/cogol/Desktop/test_bench/tb_esempio_1.vhd" Line 119

@@ -1,4 +1,0 @@
-Time resolution is 1 ps
-Failure: Simulation Ended! TEST PASSATO (ENCODE_EXAMPLE)
-Time: 6150 ns  Iteration: 0  Process: /project_tb/test  File: C:/Users/cogol/Desktop/test_bench/tb_example.vhd
-$finish called at time : 6150 ns : File "C:/Users/cogol/Desktop/test_bench/tb_example.vhd" Line 112
