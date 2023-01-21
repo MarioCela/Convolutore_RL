@@ -34,14 +34,35 @@ ordine P1K, P2K (ogni transizione è annotata come Uk/p1k, p2k).
 La macchina a stati che descrive l'evoluzione della macchina nel corso dell'elaborazione di una parola è:
 
 <p align="center">
-  <img src="Documentation/images/FSM_CONV.png" alt="Convolutore"/>
+  <img src="Documentation/images/FSM_Conv.jpg" alt="Convolutore"/>
 </p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Soluzione
 
-***Descrizione della soluzione***
+La macchina progettata è stata implementata utilizzando un singolo componente, quindi sia il convolutore che gli stati di supporto (ad esempio di lettura e scrittura dalla RAM, e lo stato di indirizzamento nel convolutore) non sono stati divisi.
+
+Come mostrato in figura, gli stati individuati sono diversi:
+
+<p align="center">
+  <img src="Documentation/images/FSM.png" alt="Convolutore"/>
+</p>
+
+La macchina funziona sia in pre che in post sintesi. Infatti, come mostrano gli output di `report_utilization` e `report_timing`, i requisiti di memoria e di tempo sono sodisfatti. In particolare, la macchina non presenta latch in post-sintesi.
+Seguono i report:
+
+<p align="center">
+  <img src="Documentation/images/report_uilization.png" alt="Convolutore"/>
+</p>
+
+<p align="center">
+  <img src="Documentation/images/report_timing.png" alt="Convolutore"/>
+</p>
+
+Per una più dettagliata descrizione riguardo l'implementazione, può essere consultata la documentazione del progetto al seguente [link](https://github.com/AlessandroCogollo/LNProject2022/blob/main/Documentation/documentation.pdf).
+
+Se, invece, si è interessati al codice vero e proprio del componente, può essere consultato il file VHDL al seguente [link](https://github.com/AlessandroCogollo/LNProject2022/blob/main/project_reti_logiche.vhd).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
