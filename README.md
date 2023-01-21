@@ -3,7 +3,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/AlessandroCogollo/LNProject2022">
+  <a href="https://github.com/MarioCela/Convolutore_RL">
     <img src="Documentation/images/Xilinx.png" alt="Xilinx Ixon" width="256">
   </a>
 
@@ -60,9 +60,9 @@ Seguono i report:
   <img src="Documentation/images/report_timing.png" alt="Convolutore"/>
 </p>
 
-Per una più dettagliata descrizione riguardo l'implementazione, può essere consultata la documentazione del progetto al seguente [link](https://github.com/AlessandroCogollo/LNProject2022/blob/main/Documentation/documentation.pdf).
+Per una più dettagliata descrizione riguardo l'implementazione, può essere consultata la documentazione del progetto al seguente [link](https://github.com/MarioCela/Convolutore_RL/blob/main/Documentation/documentation.pdf).
 
-Se, invece, si è interessati al codice vero e proprio del componente, può essere consultato il file VHDL al seguente [link](https://github.com/AlessandroCogollo/LNProject2022/blob/main/project_reti_logiche.vhd).
+Se, invece, si è interessati al codice vero e proprio del componente, può essere consultato il file VHDL al seguente [link](https://github.com/MarioCela/Convolutore_RL/blob/main/project_reti_logiche.vhd).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -71,7 +71,7 @@ Se, invece, si è interessati al codice vero e proprio del componente, può esse
 <!-- LICENSE -->
 ## License 📄
 
-Distributed under the `MIT` License. See [LICENSE](https://github.com/AlessandroCogollo/LNProject2022/blob/main/LICENSE) for more information.
+Distributed under the `MIT` License. See [LICENSE](https://github.com/MarioCela/Convolutore_RL/blob/main/LICENSE) for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
