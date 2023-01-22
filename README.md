@@ -1,5 +1,7 @@
 <a name="readme-top"></a>
 
+[![Xilinx](https://a11ybadges.com/badge?logo=xilinx)](https://www.xilinx.com/)
+
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
